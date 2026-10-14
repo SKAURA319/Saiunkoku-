@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>彩云国物语 · 人气角色票选</title>
+<style>
+:root{
+  --bg:#140612;
+  --bg-2:#1E0A1E;
+  --berry-1:#E94B9C;
+  --berry-2:#A23B72;
+  --text:#FBF3FA;
+  --muted:rgba(251,243,250,.58);
+  --line:rgba(255,255,255,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:radial-gradient(120% 90% at 50% 0%, #3A0F2E 0%, var(--bg-2) 45%, var(--bg) 100%);
+  color:var(--text);
+  overflow:hidden;-webkit-font-smoothing:antialiased;
+  letter-spacing:.01em;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;
+  background:
+    radial-gradient(60% 40% at 12% 8%, rgba(233,75,156,.18), transparent 60%),
+    radial-gradient(50% 45% at 92% 92%, rgba(162,59,114,.22), transparent 60%);
+  z-index:0;
+}
+
+.screen{position:fixed;inset:0;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:1}
+.screen.active{display:flex;flex-direction:column}
+
+/* PK 页：白色背景，覆盖 body 的浆果色 */
+#screen-pk{background:#FAFAFA}
+#screen-pk::before{display:none}
+
+/* ---------- 开始页 ---------- */
+.start-wrap{
+  margin:auto;padding:48px 24px 40px;width:100%;max-width:460px;text-align:center;
+}
+.badge{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:7px 15px;border-radius:99px;
+  font-size:12px;font-weight:700;letter-spacing:.08em;
+  color:#FCC5E0;
+  background:linear-gradient(135deg,rgba(233,75,156,.18),rgba(162,59,114,.18));
+  border:1px solid rgba(233,75,156,.35);
+  box-shadow:0 0 24px -8px rgba(233,75,156,.5);
+  margin-bottom:22px;
+}
+.badge::before{
+  content:'';width:6px;height:6px;border-radius:99px;
+  background:#E94B9C;box-shadow:0 0 8px #E94B9C;
+}
+h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em}
+.grad{
+  background:linear-gradient(120deg,#FF7BC0 0%,#E94B9C 40%,#A23B72 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.sub{font-size:14px;color:var(--muted);line-height:1.75;margin-top:14px;font-weight:500}
+
+.rules{
+  text-align:left;font-size:13px;color:rgba(251,243,250,.72);line-height:1.95;
+  background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+  border:1px solid var(--line);
+  border-radius:18px;padding:16px 18px;margin:24px 0;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+}
+.rules b{color:#FBF3FA;font-weight:700}
+.rules .dot{
+  display:inline-block;width:5px;height:5px;border-radius:99px;
+  background:#E94B9C;vertical-align:middle;margin-right:8px;
+  box-shadow:0 0 6px rgba(233,75,156,.8);
+}
+
+.hint{font-size:12px;color:rgba(251,243,250,.32);margin-top:16px;font-weight:500}
+
+/* ---------- 按钮 ---------- */
+.btn-primary{
+  width:100%;padding:17px;border:none;border-radius:16px;
+  background:linear-gradient(135deg,#FF7BC0 0%,#E94B9C 45%,#A23B72 100%);
+  color:#fff;font-size:16px;font-weight:800;cursor:pointer;
+  letter-spacing:.02em;font-family:inherit;
+  transition:transform .15s,box-shadow .2s,filter .2s;
+  box-shadow:0 10px 32px -10px rgba(233,75,156,.75), inset 0 1px 0 rgba(255,255,255,.25);
+  position:relative;overflow:hidden;
+}
+.btn-primary::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.14),transparent 50%);
+  pointer-events:none;
+}
+.btn-primary:active{transform:scale(.975);filter:brightness(.95)}
+.btn-ghost{
+  width:100%;padding:16px;margin-top:10px;
+  border:1px solid var(--line);border-radius:16px;
+  background:rgba(255,255,255,.03);color:var(--text);
+  font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:background .15s,transform .15s,border-color .2s;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+}
+.btn-ghost:active{transform:scale(.975);background:rgba(255,255,255,.08);border-color:rgba(233,75,156,.4)}
+
+/* ---------- PK 页 ---------- */
+.pk-header{
+  padding:calc(18px + env(safe-area-inset-top)) 20px 6px;
+  width:100%;max-width:700px;margin:0 auto;flex-shrink:0;
+}
+.pk-top{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.phase-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 13px;border-radius:99px;
+  font-size:11px;font-weight:800;letter-spacing:.1em;
+  color:#C2255C;text-transform:uppercase;
+  background:linear-gradient(135deg,#FFDEEB,#FCC2D7);
+  border:1px solid rgba(194,37,92,.18);
+  transition:all .3s;
+  box-shadow:0 2px 8px -2px rgba(194,37,92,.25);
+}
+.phase-tag::before{
+  content:'';width:6px;height:6px;border-radius:99px;
+  background:#E94B9C;box-shadow:0 0 7px #E94B9C;
+  animation:pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.6;transform:scale(.85)}
+}
+.pk-meta{
+  display:flex;gap:16px;font-size:12px;color:#868E96;font-weight:600;
+}
+.pk-meta strong{color:#212529;font-weight:800;font-variant-numeric:tabular-nums}
+
+.progress-track{
+  height:5px;border-radius:99px;
+  background:#EBEDF0;overflow:hidden;
+}
+.progress-fill{
+  height:100%;width:0%;border-radius:99px;
+  background:linear-gradient(90deg,#FF7BC0,#E94B9C,#A23B72);
+  box-shadow:0 0 10px rgba(233,75,156,.45);
+  transition:width .4s cubic-bezier(.2,.8,.2,1);
+}
+
+.pk-arena{
+  flex:1;min-height:0;
+  padding:16px 16px calc(24px + env(safe-area-inset-bottom));
+  width:100%;max-width:700px;margin:0 auto;
+}
+.pk-arena.dual{display:flex;align-items:stretch;gap:12px}
+.pk-arena.quad{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:12px;
+}
+
+/* 果冻色卡片 */
+.pk-card{
+  min-width:0;border-radius:24px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  cursor:pointer;position:relative;overflow:hidden;user-select:none;
+  transition:transform .25s cubic-bezier(.2,.8,.2,1),opacity .25s,box-shadow .25s,filter .25s;
+  will-change:transform;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.75),
+    inset 0 -2px 0 rgba(0,0,0,.05),
+    0 10px 26px -12px rgba(0,0,0,.22);
+  border:1px solid rgba(255,255,255,.5);
+}
+.pk-card::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 55%),
+    linear-gradient(180deg,transparent 55%,rgba(255,255,255,.18) 100%);
+  border-radius:inherit;
+}
+.pk-arena.dual .pk-card{flex:1 1 0;padding:28px 14px}
+.pk-arena.quad .pk-card{border-radius:20px;padding:18px 10px;gap:10px}
+
+.pk-card:active{transform:scale(.975)}
+.pk-card.picked{
+  transform:scale(1.03);
+  box-shadow:
+    0 0 0 4px #E94B9C,
+    0 14px 36px -8px rgba(233,75,156,.5),
+    inset 0 1px 0 rgba(255,255,255,.85);
+  z-index:2;
+}
+.pk-card.faded{opacity:.22;transform:scale(.94);filter:saturate(.6)}
+
+.pk-name{
+  font-size:clamp(24px,6.6vw,36px);
+  font-weight:800;line-height:1.2;text-align:center;
+  letter-spacing:.01em;word-break:break-all;
+  color:#1A1A1F;
+  text-shadow:0 1px 0 rgba(255,255,255,.6);
+  position:relative;z-index:1;
+}
+.pk-arena.quad .pk-name{
+  font-size:clamp(15px,4.4vw,20px);
+}
+.pk-deco{
+  width:36px;height:3px;border-radius:99px;
+  background:rgba(0,0,0,.22);
+  position:relative;z-index:1;
+}
+.pk-arena.quad .pk-deco{width:22px;height:2px}
+
+/* ---------- 结果页 ---------- */
+.result-wrap{
+  margin:auto;padding:42px 20px calc(34px + env(safe-area-inset-bottom));
+  width:100%;max-width:460px;text-align:center;
+}
+.result-head{margin-bottom:26px}
+.result-head h2{font-size:30px;font-weight:800;letter-spacing:-.025em}
+.result-head .sub{margin-top:8px}
+
+.grid9{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:28px}
+.cell{
+  aspect-ratio:1/1;border-radius:20px;padding:6px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  animation:cellIn .55s cubic-bezier(.2,.8,.2,1) both;
+  position:relative;overflow:hidden;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.45),
+    0 6px 20px -10px rgba(0,0,0,.5);
+}
+.cell::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 55%),
+    linear-gradient(180deg,transparent 55%,rgba(255,255,255,.15) 100%);
+}
+.cell-rank{
+  font-size:10px;font-weight:800;color:rgba(0,0,0,.4);
+  margin-bottom:3px;letter-spacing:.06em;
+  position:relative;z-index:1;
+}
+.cell-name{
+  font-size:clamp(12px,3.6vw,16px);
+  font-weight:800;line-height:1.24;color:#1A1A1F;
+  text-shadow:0 1px 0 rgba(255,255,255,.55);
+  word-break:break-all;
+  position:relative;z-index:1;
+}
+@keyframes cellIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+
+/* ---------- 排行榜 ---------- */
+.rank-wrap{
+  margin:auto;padding:42px 20px calc(34px + env(safe-area-inset-bottom));
+  width:100%;max-width:460px;
+}
+.rank-wrap h2{
+  font-size:28px;font-weight:800;letter-spacing:-.025em;
+  text-align:center;margin-bottom:6px;
+}
+.rank-wrap .sub{text-align:center;margin-bottom:24px}
+.rank-list{
+  display:flex;flex-direction:column;gap:7px;margin-bottom:26px;
+}
+.rank-item{
+  display:flex;align-items:center;gap:13px;
+  padding:13px 15px;border-radius:16px;
+  background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.06);
+  transition:transform .15s;
+}
+.rank-item:active{transform:scale(.98)}
+.rank-no{
+  width:28px;height:28px;border-radius:10px;
+  display:grid;place-items:center;
+  font-size:12px;font-weight:800;
+  background:rgba(255,255,255,.06);
+  color:var(--muted);flex-shrink:0;
+}
+.rank-item:nth-child(1) .rank-no{
+  background:linear-gradient(135deg,#FFD43B,#E67700);color:#fff;
+  box-shadow:0 0 16px -2px rgba(255,212,59,.6);
+}
+.rank-item:nth-child(2) .rank-no{
+  background:linear-gradient(135deg,#E5E7EB,#9CA3AF);color:#fff;
+}
+.rank-item:nth-child(3) .rank-no{
+  background:linear-gradient(135deg,#FDBA74,#C2410C);color:#fff;
+}
+.rank-name{
+  flex:1;font-size:15px;font-weight:700;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.rank-count{
+  font-size:11px;font-weight:800;
+  color:#FCC5E0;
+  background:linear-gradient(135deg,rgba(233,75,156,.18),rgba(162,59,114,.18));
+  border:1px solid rgba(233,75,156,.25);
+  padding:4px 10px;border-radius:99px;
+  letter-spacing:.02em;
+}
+.rank-empty{
+  text-align:center;padding:64px 0;
+  font-size:14px;color:var(--muted);line-height:1.8;
+}
+</style>
+</head>
+<body>
+
+<!-- ============ 开始页 ============ -->
+<section id="screen-start" class="screen active">
+  <div class="start-wrap">
+    <div class="badge">彩云国物语</div>
+    <h1>选出你最喜欢的<br><span class="grad">九位角色</span></h1>
+    <p class="sub">70 位角色 · 全程凭第一直觉选择</p>
+    <div class="rules">
+      <div><span class="dot"></span><b>开局四选二</b>，选出更喜欢的两位</div>
+      <div><span class="dot"></span>后续每轮<b>二选一</b>，直到剩九位</div>
+      <div><span class="dot"></span>没被选中的会悄悄离开</div>
+      <div><span class="dot"></span>最终剩下的 9 位就是你的选择</div>
+    </div>
+    <button class="btn-primary" id="btnStart">开始对决</button>
+    <p class="hint">约 90~130 题 · 建议预留 5~10 分钟</p>
+  </div>
+</section>
+
+<!-- ============ PK 页 ============ -->
+<section id="screen-pk" class="screen">
+  <div class="pk-header">
+    <div class="pk-top">
+      <span class="phase-tag" id="phaseTag">四选二</span>
+      <div class="pk-meta">
+        <span>存活 <strong id="aliveCount">70</strong></span>
+        <span>已淘汰 <strong id="elimCount">0</strong></span>
+      </div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+  <div class="pk-arena dual" id="pkArena"></div>
+</section>
+
+<!-- ============ 结果页 ============ -->
+<section id="screen-result" class="screen">
+  <div class="result-wrap">
+    <div class="result-head">
+      <div class="badge">测试完成</div>
+      <h2>你的九宫格</h2>
+      <p class="sub">这 9 位，就是你最喜欢的角色</p>
+    </div>
+    <div class="grid9" id="grid9"></div>
+    <button class="btn-primary" id="btnSave">保存图片</button>
+    <button class="btn-ghost" id="btnRank">查看总排行榜</button>
+    <button class="btn-ghost" id="btnRestart">再测一次</button>
+  </div>
+</section>
+
+<!-- ============ 排行榜页 ============ -->
+<section id="screen-rank" class="screen">
+  <div class="rank-wrap">
+    <h2>总排行榜</h2>
+    <p class="sub">基于本设备所有已完成的测试</p>
+    <div class="rank-list" id="rankList"></div>
+    <button class="btn-ghost" id="btnBackResult">返回结果</button>
+  </div>
+</section>
+
+<canvas id="exportCanvas" style="display:none"></canvas>
+
+<script>
+/* =========================================================
+   1. 角色名单
+   ========================================================= */
+const NAMES = [
+  '红秀丽','紫刘辉','茈静兰','李绛攸','蓝楸瑛','浪燕青','杜影月','红邵可',
+  '紫戬华','铃兰','郑悠舜','红黎深','杨修','碧珀明','黄奇人','景柚梨',
+  '孙陵王','管飞翔','欧阳玉','旺季','凌晏树','羽羽','缥璃樱（大）','缥璃樱（小）',
+  '葵皇毅','陆清雅','榛苏芳','白雷炎','黑燿世','皋韩升','霄瑶璇','宋隼凱',
+  '茶鸳洵','缥珠翠','香铃','胡蝶','叶棕庚','榛渊西','王庆张','姜文仲',
+  '刘志美','蓝龙莲','蓝十三','玉华','司马迅','红玖琅','蔷薇姬','碧歌梨',
+  '欧阳纯','碧万里','华真','櫂瑜','丙太守','柴进','柴凜','柴彰',
+  '茶仲障','缥英姬','茶春姫','茶草洵','茶朔洵','茶克洵','朱鸾','翔琳',
+  '曜春','缥瑠花','缥涟','百合姬','红玉环','来俊臣'
+];
+
+/* 关键字 → 色系映射（第一个字或双字姓氏匹配） */
+const COLOR_MAP = {
+  '红': ['#FFB3B3','#FF7B7B'],   /* 红 */
+  '紫': ['#D0BFFF','#A98BF5'],   /* 紫 */
+  '茈': ['#C4A6F0','#9B6FE0'],   /* 深紫 */
+  '蓝': ['#B3D9FF','#74B3F5'],   /* 蓝 */
+  '茶': ['#D4BFA6','#A88567'],   /* 茶 → 棕 */
+  '碧': ['#A8E6D8','#5FC6A6'],   /* 碧 → 翠 */
+  '黄': ['#FFE9A3','#F0C238'],   /* 黄 */
+  '白': ['#E8EBEF','#B8C0CC'],   /* 白 → 灰白 */
+  '黑': ['#B0B5BD','#6E747E'],   /* 黑 → 深灰 */
+  '朱': ['#FF9EA6','#E85762'],   /* 朱 → 朱红 */
+  '李': ['#B5E6B5','#78C978'],   /* 李 → 绿 */
+  '铃': ['#FFEC9E','#F5C948'],   /* 铃 → 黄 */
+  '香': ['#FBC1D5','#E88AAC'],   /* 香 → 粉 */
+  '玉': ['#B5E8D5','#6FC9A8'],   /* 玉 → 玉绿 */
+  '柴': ['#D4BFA6','#A88567'],   /* 柴 → 棕 */
+  '榛': ['#D4BFA6','#A88567'],   /* 榛 → 棕 */
+  '浪': ['#B3D9FF','#74B3F5'],   /* 浪 → 蓝 */
+  '孙': ['#FFCEA3','#F09A50'],   /* 孙 → 橙 */
+  '杜': ['#FFD0A3','#EE9850'],   /* 杜 → 橙 */
+  '杨': ['#B5E8D5','#6FC9A8'],   /* 杨 → 青绿 */
+  '欧阳': ['#DAC4FF','#AE8DE8'], /* 欧阳 → 浅紫 */
+  '郑': ['#B8EBB8','#7CCB7C'],   /* 郑 → 绿 */
+  '凌': ['#C4E4FF','#8ABDF0'],   /* 凌 → 冰蓝 */
+  '羽': ['#DDE9FF','#A3B8E8'],   /* 羽 → 浅蓝 */
+  '缥': ['#C0EBEC','#82C9CB'],   /* 缥 → 淡青 */
+  '葵': ['#CDBCFC','#A08AEC'],   /* 葵 → 紫 */
+  '陆': ['#DEF0A8','#B5CC63'],   /* 陆 → 黄绿 */
+  '景': ['#A8E6E6','#62C4C4'],   /* 景 → 青 */
+  '霄': ['#B3D9FF','#74A8E8'],   /* 霄 → 天蓝 */
+  '宋': ['#B3D9FF','#7AACE8'],   /* 宋 → 蓝 */
+  '胡': ['#FFE0B0','#F0B860'],   /* 胡 → 橘黄 */
+  '叶': ['#BCEBBC','#7CCB7C'],   /* 叶 → 绿 */
+  '王': ['#FFD9D9','#F0A0A0'],   /* 王 → 淡红 */
+  '姜': ['#FFE9A3','#E0B838'],   /* 姜 → 姜黄 */
+  '刘': ['#FFD9B0','#E89858'],   /* 刘 → 橙 */
+  '司': ['#CDBCFC','#A08AEC'],   /* 司 → 紫 */
+  '蔷': ['#FBC1D5','#E87CA8'],   /* 蔷 → 玫红 */
+  '华': ['#FFC9C9','#F09090'],   /* 华 → 浅红 */
+  '櫂': ['#B3D9FF','#74A8E8'],   /* 櫂 → 蓝 */
+  '丙': ['#FFD9B0','#E89858'],   /* 丙 → 橙 */
+  '翔': ['#B3D9FF','#74A8E8'],   /* 翔 → 蓝 */
+  '曜': ['#FFEC9E','#E8C038'],   /* 曜 → 黄 */
+  '百': ['#B8EBB8','#7CCB7C'],   /* 百 → 绿 */
+  '来': ['#FFD9B0','#E89858'],   /* 来 → 橙 */
+  '旺': ['#FFCEA3','#F09A50'],   /* 旺 → 橙 */
+  '管': ['#B3D9FF','#74A8E8'],   /* 管 → 蓝 */
+  '姬': ['#FBC1D5','#E87CA8'],   /* 姬 → 粉 */
+  '皇': ['#FFEC9E','#E8B838'],   /* 皇 → 金 */
+  '韩': ['#CDBCFC','#A08AEC'],   /* 韩 → 紫 */
+  '仲': ['#B8EBB8','#7CCB7C'],   /* 仲 → 绿 */
+  '隼': ['#FFCEA3','#F09A50'],   /* 隼 → 橙 */
+};
+
+/* 根据名字返回果冻色（优先匹配双字姓氏，再匹配单字） */
+function nameToColor(name){
+  for (let len = 2; len >= 1; len--){
+    const key = name.slice(0, len);
+    if (COLOR_MAP[key]) return COLOR_MAP[key];
+  }
+  /* 兜底：明亮哈希色 */
+  let hash = 0;
+  for (let i = 0; i < name.length; i++){
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    hash = hash & hash;
+  }
+  const hue = Math.abs(hash) % 360;
+  return [`hsl(${hue},80%,82%)`, `hsl(${hue},65%,68%)`];
+}
+
+const POOL = NAMES.map(name => ({ name, color: nameToColor(name) }));
+
+/* =========================================================
+   2. 工具函数
+   ========================================================= */
+const $ = id => document.getElementById(id);
+
+function shuffle(arr){
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+
+/* =========================================================
+   3. 暗设定参数（用户看不到）
+   ========================================================= */
+let failLimit = 2;                 // 淘汰阈值（动态可改）
+const PHASE2_THRESHOLD = 40;       // 剩 40 人 → 阶段 2 + 重置
+const PHASE3_THRESHOLD = 20;       // 剩 20 人 → 阶段 3 + 重置 + 改成 3 次淘汰
+const FINAL_COUNT = 9;             // 最终保留 9 位
+
+/* =========================================================
+   4. 游戏状态
+   ========================================================= */
+let fighters = [];
+let cards = [];
+let phase = 1;
+let picking = false;
+let selectedIndices = [];
+let phase2Done = false;
+let phase3Done = false;
+
+/* =========================================================
+   5. 初始化
+   ========================================================= */
+function initGame(){
+  fighters = POOL.map(p => ({
+    name: p.name,
+    color: p.color,
+    fails: 0,
+    wins: 0,
+    alive: true,
+  }));
+  phase = 1;
+  picking = false;
+  selectedIndices = [];
+  phase2Done = false;
+  phase3Done = false;
+  failLimit = 2;
+  nextRound();
+}
+
+function aliveCount(){
+  return fighters.filter(f => f.alive).length;
+}
+
+function pickN(n){
+  const alive = fighters.filter(f => f.alive);
+  if (alive.length <= n) return alive;
+
+  const sorted = [...alive].sort((a, b) =>
+    (b.fails - a.fails) || (Math.random() - 0.5)
+  );
+
+  const K = Math.min(sorted.length, n * 3);
+  const pool = shuffle(sorted.slice(0, K));
+  return pool.slice(0, n);
+}
+
+function resetFails(){
+  fighters.forEach(f => { if (f.alive) f.fails = 0; });
+}
+
+/* =========================================================
+   6. 回合流程
+   ========================================================= */
+function nextRound(){
+  const alive = aliveCount();
+
+  if (alive <= FINAL_COUNT){
+    endGame();
+    return;
+  }
+
+  /* 40 人 → 阶段 2 + 重置 */
+  if (!phase2Done && alive <= PHASE2_THRESHOLD){
+    phase = 2;
+    resetFails();
+    phase2Done = true;
+  }
+  /* 20 人 → 阶段 3 + 重置 + 改成 3 次淘汰 */
+  if (!phase3Done && alive <= PHASE3_THRESHOLD){
+    phase = 3;
+    resetFails();
+    failLimit = 3;    /* 暗改：从此变成 3 次没选中才淘汰 */
+    phase3Done = true;
+  }
+
+  const n = phase === 1 ? 4 : 2;
+  cards = pickN(n);
+
+  if (!cards || cards.length < 2){
+    endGame();
+    return;
+  }
+
+  renderPK();
+}
+
+function renderPK(){
+  const arena = $('pkArena');
+  const isQuad = cards.length === 4;
+
+  arena.className = 'pk-arena ' + (isQuad ? 'quad' : 'dual');
+  $('phaseTag').textContent = isQuad ? '四选二' : '二选一';
+
+  arena.innerHTML = cards.map((f, i) => {
+    const [c1, c2] = f.color;
+    return `<div class="pk-card" data-index="${i}" style="background:linear-gradient(155deg,${c1} 0%,${c2} 100%)">
+      <div class="pk-name">${f.name}</div>
+      <div class="pk-deco"></div>
+    </div>`;
+  }).join('');
+
+  arena.querySelectorAll('.pk-card').forEach(el => {
+    el.addEventListener('click', () => onCardClick(+el.dataset.index));
+  });
+
+  selectedIndices = [];
+  picking = false;
+
+  requestAnimationFrame(() => {
+    arena.querySelectorAll('.pk-card').forEach((el, i) => {
+      el.animate(
+        [{ opacity: 0, transform: 'translateY(12px) scale(.95)' },
+         { opacity: 1, transform: 'none' }],
+        { duration: 320, delay: i * 55, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'both' }
+      );
+    });
+  });
+
+  updateProgress();
+}
+
+function updateProgress(){
+  const alive = aliveCount();
+  const total = fighters.length;
+  const eliminated = total - alive;
+
+  const target = total - FINAL_COUNT;
+  const pct = target > 0 ? Math.min(100, eliminated / target * 100) : 0;
+
+  $('progressFill').style.width = pct + '%';
+  $('aliveCount').textContent = alive;
+  $('elimCount').textContent = eliminated;
+}
+
+/* =========================================================
+   7. 点击处理
+   ========================================================= */
+function onCardClick(index){
+  if (picking) return;
+
+  if (phase === 1){
+    const el = document.querySelector(`.pk-card[data-index="${index}"]`);
+    if (!el) return;
+
+    if (selectedIndices.includes(index)){
+      selectedIndices = selectedIndices.filter(i => i !== index);
+      el.classList.remove('picked');
+      return;
+    }
+
+    if (selectedIndices.length >= 2) return;
+
+    selectedIndices.push(index);
+    el.classList.add('picked');
+
+    if (navigator.vibrate){ try { navigator.vibrate(8); } catch(e){} }
+
+    if (selectedIndices.length === 2){
+      picking = true;
+      setTimeout(() => processPhase1(), 420);
+    }
+  } else {
+    picking = true;
+    if (navigator.vibrate){ try { navigator.vibrate(8); } catch(e){} }
+    processPhase2or3(index);
+  }
+}
+
+function processPhase1(){
+  const arena = $('pkArena');
+  const els = arena.querySelectorAll('.pk-card');
+
+  els.forEach((el, i) => {
+    el.style.pointerEvents = 'none';
+    if (selectedIndices.includes(i)) el.classList.add('picked');
+    else el.classList.add('faded');
+  });
+
+  const pickedList = selectedIndices.map(i => cards[i]);
+  const unpickedList = cards.filter((_, i) => !selectedIndices.includes(i));
+
+  pickedList.forEach(f => f.wins++);
+  unpickedList.forEach(f => {
+    f.fails++;
+    if (f.fails >= failLimit) f.alive = false;
+  });
+
+  setTimeout(() => {
+    selectedIndices = [];
+    nextRound();
+  }, 520);
+}
+
+function processPhase2or3(winnerIndex){
+  const arena = $('pkArena');
+  const els = arena.querySelectorAll('.pk-card');
+
+  els.forEach((el, i) => {
+    el.style.pointerEvents = 'none';
+    if (i === winnerIndex) el.classList.add('picked');
+    else el.classList.add('faded');
+  });
+
+  const winner = cards[winnerIndex];
+  const loser  = cards[1 - winnerIndex];
+
+  winner.wins++;
+  loser.fails++;
+
+  setTimeout(() => {
+    if (loser.fails >= failLimit) loser.alive = false;
+    selectedIndices = [];
+    nextRound();
+  }, 360);
+}
+
+/* =========================================================
+   8. 结束 & 结果
+   ========================================================= */
+let finalWinners = [];
+
+function endGame(){
+  finalWinners = fighters
+    .filter(f => f.alive)
+    .sort((a, b) =>
+      (a.fails - b.fails) ||
+      (b.wins - a.wins) ||
+      a.name.localeCompare(b.name)
+    )
+    .slice(0, FINAL_COUNT);
+
+  saveHistory(finalWinners.map(f => f.name));
+
+  goTo('screen-result');
+  requestAnimationFrame(buildGrid);
+}
+
+function buildGrid(){
+  const grid = $('grid9');
+  grid.innerHTML = '';
+
+  finalWinners.forEach((item, i) => {
+    const [c1, c2] = item.color;
+    const div = document.createElement('div');
+    div.className = 'cell';
+    div.style.background = `linear-gradient(155deg, ${c1} 0%, ${c2} 100%)`;
+    div.style.animationDelay = (i * 60) + 'ms';
+    div.innerHTML = `
+      <div class="cell-rank">NO.${i + 1}</div>
+      <div class="cell-name">${item.name}</div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+/* =========================================================
+   9. 本地记录 & 排行榜
+   ========================================================= */
+const HISTORY_KEY = 'cyg_vote_history_v1';
+
+function loadHistory(){
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  } catch (e){
+    return [];
+  }
+}
+
+function saveHistory(names){
+  const h = loadHistory();
+  h.push({ date: Date.now(), winners: names });
+  if (h.length > 200) h.shift();
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
+  } catch (e){}
+}
+
+function aggregateRanking(){
+  const h = loadHistory();
+  const map = {};
+
+  h.forEach(session => {
+    session.winners.forEach((name, idx) => {
+      if (!map[name]) map[name] = { name, count: 0, score: 0 };
+      map[name].count++;
+      map[name].score += (FINAL_COUNT - idx);
+    });
+  });
+
+  return Object.values(map)
+    .sort((a, b) => (b.score - a.score) || (b.count - a.count))
+    .slice(0, 30);
+}
+
+function renderRanking(){
+  const list = $('rankList');
+  const data = aggregateRanking();
+
+  if (!data.length){
+    list.innerHTML = '<div class="rank-empty">还没有任何记录<br>完成一次测试后就会出现在这里</div>';
+    return;
+  }
+
+  list.innerHTML = data.map((item, i) => `
+    <div class="rank-item">
+      <div class="rank-no">${i + 1}</div>
+      <div class="rank-name">${item.name}</div>
+      <div class="rank-count">${item.count} 次</div>
+    </div>
+  `).join('');
+}
+
+/* =========================================================
+   10. 导出图片
+   ========================================================= */
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y,     x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x,     y + h, r);
+  ctx.arcTo(x,     y + h, x,     y,     r);
+  ctx.arcTo(x,     y,     x + w, y,     r);
+  ctx.closePath();
+}
+
+function exportImage(){
+  const n = finalWinners.length;
+  const cols = 3;
+  const rows = Math.ceil(n / cols);
+  const SIZE = 1080, PAD = 40, GAP = 14;
+  const cell = (SIZE - PAD * 2 - GAP * (cols - 1)) / cols;
+  const height = PAD * 2 + rows * cell + (rows - 1) * GAP;
+  const FONT = '-apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+
+  const canvas = $('exportCanvas');
+  canvas.width = SIZE;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+
+  /* 白底 */
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, SIZE, height);
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  finalWinners.forEach((item, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const x = PAD + col * (cell + GAP);
+    const y = PAD + row * (cell + GAP);
+
+    const [c1, c2] = item.color;
+    const grad = ctx.createLinearGradient(x, y, x + cell, y + cell);
+    grad.addColorStop(0, c1);
+    grad.addColorStop(1, c2);
+    ctx.fillStyle = grad;
+    roundRect(ctx, x, y, cell, cell, 36);
+    ctx.fill();
+
+    /* 顶部高光，营造果冻感 */
+    const hl = ctx.createRadialGradient(
+      x + cell / 2, y, 0,
+      x + cell / 2, y, cell * .9
+    );
+    hl.addColorStop(0, 'rgba(255,255,255,.55)');
+    hl.addColorStop(.55, 'rgba(255,255,255,0)');
+    ctx.fillStyle = hl;
+    roundRect(ctx, x, y, cell, cell, 36);
+    ctx.fill();
+
+    ctx.font = `800 26px ${FONT}`;
+    ctx.fillStyle = 'rgba(0,0,0,.35)';
+    ctx.fillText(`NO.${i + 1}`, x + cell / 2, y + 56);
+
+    let fs = 48;
+    ctx.font = `bold ${fs}px ${FONT}`;
+    while (ctx.measureText(item.name).width > cell - 40 && fs > 18){
+      fs -= 2;
+      ctx.font = `bold ${fs}px ${FONT}`;
+    }
+
+    ctx.fillStyle = '#1A1A1F';
+    ctx.shadowColor = 'rgba(255,255,255,.6)';
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetY = 1;
+    ctx.fillText(item.name, x + cell / 2, y + cell / 2 + 22);
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+  });
+
+  const done = url => {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '我的彩云国最爱角色.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  if (canvas.toBlob){
+    canvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      done(url);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }, 'image/png');
+  } else {
+    done(canvas.toDataURL('image/png'));
+  }
+}
+
+/* =========================================================
+   11. 事件绑定
+   ========================================================= */
+$('btnStart').addEventListener('click', () => {
+  initGame();
+  goTo('screen-pk');
+});
+
+$('btnSave').addEventListener('click', exportImage);
+
+$('btnRank').addEventListener('click', () => {
+  renderRanking();
+  goTo('screen-rank');
+});
+
+$('btnBackResult').addEventListener('click', () => {
+  goTo('screen-result');
+});
+
+$('btnRestart').addEventListener('click', () => {
+  goTo('screen-start');
+});
+</script>
+</body>
+</html>
