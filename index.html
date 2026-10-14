@@ -706,7 +706,8 @@ function processPhase1(){
 
   pickedList.forEach(f => f.wins++);
   unpickedList.forEach(f => {
-    f.fails++;
+    // 【暗设定】四选二没选中，直接视为输掉两次，立即达到淘汰阈值（加速淘汰，保证四选二至少淘汰30人）
+    f.fails += 2;
     if (f.fails >= failLimit) f.alive = false;
   });
 
