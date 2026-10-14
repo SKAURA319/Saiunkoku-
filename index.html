@@ -312,7 +312,7 @@ h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em;color:v
       <div><span class="dot"></span>最终剩下的 9 位就是你的选择</div>
     </div>
     <button class="btn-primary" id="btnStart">开始对决</button>
-    <p class="hint">约 100~140 题 · 建议预留 6~12 分钟</p>
+    <p class="hint">约 120~160 题 · 建议预留 8~15 分钟</p>
   </div>
 </section>
 
@@ -435,7 +435,18 @@ function pairKey(a, b){
 }
 
 /* =========================================================
-   3. 暗设定参数
+   3. 暗设定参数（用户看不到）
+   ---------------------------------------------------------
+   流程：
+   1. 四选二：全员出现一次 → 继续四选二淘汰到 ≤40 人
+   2. 二选一（40-30 区间）：全员出现一次 + 配对不重复
+   3. 二选一（25-20 区间）：全员出现一次 + 配对不重复
+   4. 二选一（20-11 区间）：全员出现一次 + 配对不重复
+      （进入 20 人时同时重置胜场和失败次数）
+   5. 10 人：只重置失败次数（胜场保留）
+   70 到 21 人：2 次没选中淘汰
+   20 到 9 人：3 次没选中淘汰
+   最终排序：只看 20 人以下阶段的胜场与失败次数
    ========================================================= */
 let failLimit = 2;
 const PHASE2_THRESHOLD = 40;
@@ -444,8 +455,9 @@ const PHASE4_THRESHOLD = 10;
 const FINAL_COUNT = 9;
 
 function getInterval(alive){
-  if (alive > 30 && alive <= 40) return 'I1';
-  if (alive > 20 && alive <= 25) return 'I2';
+  if (alive > 30 && alive <= 40) return 'I1';   /* 40-31 */
+  if (alive > 20 && alive <= 25) return 'I2';   /* 25-21 */
+  if (alive > 10 && alive <= 20) return 'I3';   /* 20-11 */
   return null;
 }
 
@@ -555,6 +567,10 @@ function resetFails(){
   fighters.forEach(f => { if (f.alive) f.fails = 0; });
 }
 
+function resetStats(){
+  fighters.forEach(f => { if (f.alive) { f.fails = 0; f.wins = 0; } });
+}
+
 /* =========================================================
    6. 回合流程
    ========================================================= */
@@ -575,19 +591,16 @@ function nextRound(){
 
   if (stage === 1){
     const notAppearedAlive = fighters.filter(f => f.alive && !appeared.has(f.name)).length;
-    if (notAppearedAlive === 0){
+    if (notAppearedAlive === 0 && alive <= PHASE2_THRESHOLD){
       stage = 2;
       resetFails();
     }
-  } else if (stage === 2 && alive <= PHASE2_THRESHOLD){
+  } else if (stage === 2 && alive <= PHASE3_THRESHOLD){
     stage = 3;
-    resetFails();
-  } else if (stage === 3 && alive <= PHASE3_THRESHOLD){
-    stage = 4;
-    resetFails();
+    resetStats();
     failLimit = 3;
-  } else if (stage === 4 && alive <= PHASE4_THRESHOLD){
-    stage = 5;
+  } else if (stage === 3 && alive <= PHASE4_THRESHOLD){
+    stage = 4;
     resetFails();
   }
 
