@@ -3,40 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>彩云国物语 · 人气角色票选</title>
+<title>彩云国物语 · 最喜欢角色九选</title>
 <style>
 :root{
-  --bg:#140612;
-  --bg-2:#1E0A1E;
+  --bg:#FFFFFF;
+  --bg-soft:#F7F7FA;
+  --text:#1A1A1F;
+  --muted:rgba(26,26,31,.55);
+  --line:rgba(26,26,31,.08);
   --berry-1:#E94B9C;
   --berry-2:#A23B72;
-  --text:#FBF3FA;
-  --muted:rgba(251,243,250,.58);
-  --line:rgba(255,255,255,.08);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-  background:radial-gradient(120% 90% at 50% 0%, #3A0F2E 0%, var(--bg-2) 45%, var(--bg) 100%);
+  background:var(--bg);
   color:var(--text);
   overflow:hidden;-webkit-font-smoothing:antialiased;
   letter-spacing:.01em;
 }
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;
-  background:
-    radial-gradient(60% 40% at 12% 8%, rgba(233,75,156,.18), transparent 60%),
-    radial-gradient(50% 45% at 92% 92%, rgba(162,59,114,.22), transparent 60%);
-  z-index:0;
-}
 
-.screen{position:fixed;inset:0;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:1}
+.screen{position:fixed;inset:0;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg)}
 .screen.active{display:flex;flex-direction:column}
-
-/* PK 页：白色背景，覆盖 body 的浆果色 */
-#screen-pk{background:#FAFAFA}
-#screen-pk::before{display:none}
 
 /* ---------- 开始页 ---------- */
 .start-wrap{
@@ -46,17 +35,17 @@ body::before{
   display:inline-flex;align-items:center;gap:7px;
   padding:7px 15px;border-radius:99px;
   font-size:12px;font-weight:700;letter-spacing:.08em;
-  color:#FCC5E0;
-  background:linear-gradient(135deg,rgba(233,75,156,.18),rgba(162,59,114,.18));
-  border:1px solid rgba(233,75,156,.35);
-  box-shadow:0 0 24px -8px rgba(233,75,156,.5);
+  color:#C2255C;
+  background:linear-gradient(135deg,#FFE3EF,#FCC2D7);
+  border:1px solid rgba(194,37,92,.16);
+  box-shadow:0 4px 16px -8px rgba(194,37,92,.35);
   margin-bottom:22px;
 }
 .badge::before{
   content:'';width:6px;height:6px;border-radius:99px;
   background:#E94B9C;box-shadow:0 0 8px #E94B9C;
 }
-h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em}
+h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em;color:var(--text)}
 .grad{
   background:linear-gradient(120deg,#FF7BC0 0%,#E94B9C 40%,#A23B72 100%);
   -webkit-background-clip:text;background-clip:text;color:transparent;
@@ -64,20 +53,20 @@ h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em}
 .sub{font-size:14px;color:var(--muted);line-height:1.75;margin-top:14px;font-weight:500}
 
 .rules{
-  text-align:left;font-size:13px;color:rgba(251,243,250,.72);line-height:1.95;
-  background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+  text-align:left;font-size:13px;color:rgba(26,26,31,.72);line-height:1.95;
+  background:#FFFFFF;
   border:1px solid var(--line);
   border-radius:18px;padding:16px 18px;margin:24px 0;
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:0 8px 24px -16px rgba(26,26,31,.15);
 }
-.rules b{color:#FBF3FA;font-weight:700}
+.rules b{color:var(--text);font-weight:700}
 .rules .dot{
   display:inline-block;width:5px;height:5px;border-radius:99px;
   background:#E94B9C;vertical-align:middle;margin-right:8px;
-  box-shadow:0 0 6px rgba(233,75,156,.8);
+  box-shadow:0 0 6px rgba(233,75,156,.6);
 }
 
-.hint{font-size:12px;color:rgba(251,243,250,.32);margin-top:16px;font-weight:500}
+.hint{font-size:12px;color:rgba(26,26,31,.35);margin-top:16px;font-weight:500}
 
 /* ---------- 按钮 ---------- */
 .btn-primary{
@@ -86,7 +75,7 @@ h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em}
   color:#fff;font-size:16px;font-weight:800;cursor:pointer;
   letter-spacing:.02em;font-family:inherit;
   transition:transform .15s,box-shadow .2s,filter .2s;
-  box-shadow:0 10px 32px -10px rgba(233,75,156,.75), inset 0 1px 0 rgba(255,255,255,.25);
+  box-shadow:0 10px 28px -10px rgba(233,75,156,.7), inset 0 1px 0 rgba(255,255,255,.25);
   position:relative;overflow:hidden;
 }
 .btn-primary::after{
@@ -98,12 +87,11 @@ h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em}
 .btn-ghost{
   width:100%;padding:16px;margin-top:10px;
   border:1px solid var(--line);border-radius:16px;
-  background:rgba(255,255,255,.03);color:var(--text);
+  background:#FFFFFF;color:var(--text);
   font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;
   transition:background .15s,transform .15s,border-color .2s;
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
 }
-.btn-ghost:active{transform:scale(.975);background:rgba(255,255,255,.08);border-color:rgba(233,75,156,.4)}
+.btn-ghost:active{transform:scale(.975);background:var(--bg-soft);border-color:rgba(233,75,156,.35)}
 
 /* ---------- PK 页 ---------- */
 .pk-header{
@@ -120,7 +108,7 @@ h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em}
   font-size:11px;font-weight:800;letter-spacing:.1em;
   color:#C2255C;text-transform:uppercase;
   background:linear-gradient(135deg,#FFDEEB,#FCC2D7);
-  border:1px solid rgba(194,37,92,.18);
+  border:1px solid rgba(194,37,92,.16);
   transition:all .3s;
   box-shadow:0 2px 8px -2px rgba(194,37,92,.25);
 }
@@ -162,7 +150,6 @@ h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em}
   gap:12px;
 }
 
-/* 果冻色卡片 */
 .pk-card{
   min-width:0;border-radius:24px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
@@ -269,8 +256,9 @@ h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em}
 .rank-item{
   display:flex;align-items:center;gap:13px;
   padding:13px 15px;border-radius:16px;
-  background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
-  border:1px solid rgba(255,255,255,.06);
+  background:#FFFFFF;
+  border:1px solid var(--line);
+  box-shadow:0 4px 14px -10px rgba(26,26,31,.12);
   transition:transform .15s;
 }
 .rank-item:active{transform:scale(.98)}
@@ -278,28 +266,28 @@ h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em}
   width:28px;height:28px;border-radius:10px;
   display:grid;place-items:center;
   font-size:12px;font-weight:800;
-  background:rgba(255,255,255,.06);
+  background:#F1F3F5;
   color:var(--muted);flex-shrink:0;
 }
 .rank-item:nth-child(1) .rank-no{
   background:linear-gradient(135deg,#FFD43B,#E67700);color:#fff;
-  box-shadow:0 0 16px -2px rgba(255,212,59,.6);
+  box-shadow:0 4px 12px -4px rgba(230,119,0,.6);
 }
 .rank-item:nth-child(2) .rank-no{
-  background:linear-gradient(135deg,#E5E7EB,#9CA3AF);color:#fff;
+  background:linear-gradient(135deg,#CED4DA,#868E96);color:#fff;
 }
 .rank-item:nth-child(3) .rank-no{
   background:linear-gradient(135deg,#FDBA74,#C2410C);color:#fff;
 }
 .rank-name{
-  flex:1;font-size:15px;font-weight:700;
+  flex:1;font-size:15px;font-weight:700;color:var(--text);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .rank-count{
   font-size:11px;font-weight:800;
-  color:#FCC5E0;
-  background:linear-gradient(135deg,rgba(233,75,156,.18),rgba(162,59,114,.18));
-  border:1px solid rgba(233,75,156,.25);
+  color:#C2255C;
+  background:linear-gradient(135deg,#FFE3EF,#FCC2D7);
+  border:1px solid rgba(194,37,92,.14);
   padding:4px 10px;border-radius:99px;
   letter-spacing:.02em;
 }
@@ -318,13 +306,13 @@ h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em}
     <h1>选出你最喜欢的<br><span class="grad">九位角色</span></h1>
     <p class="sub">70 位角色 · 全程凭第一直觉选择</p>
     <div class="rules">
-      <div><span class="dot"></span><b>开局四选二</b>，选出更喜欢的两位</div>
-      <div><span class="dot"></span>后续每轮<b>二选一</b>，直到剩九位</div>
+      <div><span class="dot"></span><b>开局四选二</b>，每位角色都会登场</div>
+      <div><span class="dot"></span>之后每轮<b>二选一</b>，直到剩九位</div>
       <div><span class="dot"></span>没被选中的会悄悄离开</div>
       <div><span class="dot"></span>最终剩下的 9 位就是你的选择</div>
     </div>
     <button class="btn-primary" id="btnStart">开始对决</button>
-    <p class="hint">约 90~130 题 · 建议预留 5~10 分钟</p>
+    <p class="hint">约 100~140 题 · 建议预留 6~12 分钟</p>
   </div>
 </section>
 
@@ -353,7 +341,7 @@ h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em}
     </div>
     <div class="grid9" id="grid9"></div>
     <button class="btn-primary" id="btnSave">保存图片</button>
-    <button class="btn-ghost" id="btnRank">查看总排行榜</button>
+    <button class="btn-ghost" id="btnRank">查看本机记录</button>
     <button class="btn-ghost" id="btnRestart">再测一次</button>
   </div>
 </section>
@@ -361,7 +349,7 @@ h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em}
 <!-- ============ 排行榜页 ============ -->
 <section id="screen-rank" class="screen">
   <div class="rank-wrap">
-    <h2>总排行榜</h2>
+    <h2>本机记录</h2>
     <p class="sub">基于本设备所有已完成的测试</p>
     <div class="rank-list" id="rankList"></div>
     <button class="btn-ghost" id="btnBackResult">返回结果</button>
@@ -386,68 +374,31 @@ const NAMES = [
   '曜春','缥瑠花','缥涟','百合姬','红玉环','来俊臣'
 ];
 
-/* 关键字 → 色系映射（第一个字或双字姓氏匹配） */
 const COLOR_MAP = {
-  '红': ['#FFB3B3','#FF7B7B'],   /* 红 */
-  '紫': ['#D0BFFF','#A98BF5'],   /* 紫 */
-  '茈': ['#C4A6F0','#9B6FE0'],   /* 深紫 */
-  '蓝': ['#B3D9FF','#74B3F5'],   /* 蓝 */
-  '茶': ['#D4BFA6','#A88567'],   /* 茶 → 棕 */
-  '碧': ['#A8E6D8','#5FC6A6'],   /* 碧 → 翠 */
-  '黄': ['#FFE9A3','#F0C238'],   /* 黄 */
-  '白': ['#E8EBEF','#B8C0CC'],   /* 白 → 灰白 */
-  '黑': ['#B0B5BD','#6E747E'],   /* 黑 → 深灰 */
-  '朱': ['#FF9EA6','#E85762'],   /* 朱 → 朱红 */
-  '李': ['#B5E6B5','#78C978'],   /* 李 → 绿 */
-  '铃': ['#FFEC9E','#F5C948'],   /* 铃 → 黄 */
-  '香': ['#FBC1D5','#E88AAC'],   /* 香 → 粉 */
-  '玉': ['#B5E8D5','#6FC9A8'],   /* 玉 → 玉绿 */
-  '柴': ['#D4BFA6','#A88567'],   /* 柴 → 棕 */
-  '榛': ['#D4BFA6','#A88567'],   /* 榛 → 棕 */
-  '浪': ['#B3D9FF','#74B3F5'],   /* 浪 → 蓝 */
-  '孙': ['#FFCEA3','#F09A50'],   /* 孙 → 橙 */
-  '杜': ['#FFD0A3','#EE9850'],   /* 杜 → 橙 */
-  '杨': ['#B5E8D5','#6FC9A8'],   /* 杨 → 青绿 */
-  '欧阳': ['#DAC4FF','#AE8DE8'], /* 欧阳 → 浅紫 */
-  '郑': ['#B8EBB8','#7CCB7C'],   /* 郑 → 绿 */
-  '凌': ['#C4E4FF','#8ABDF0'],   /* 凌 → 冰蓝 */
-  '羽': ['#DDE9FF','#A3B8E8'],   /* 羽 → 浅蓝 */
-  '缥': ['#C0EBEC','#82C9CB'],   /* 缥 → 淡青 */
-  '葵': ['#CDBCFC','#A08AEC'],   /* 葵 → 紫 */
-  '陆': ['#DEF0A8','#B5CC63'],   /* 陆 → 黄绿 */
-  '景': ['#A8E6E6','#62C4C4'],   /* 景 → 青 */
-  '霄': ['#B3D9FF','#74A8E8'],   /* 霄 → 天蓝 */
-  '宋': ['#B3D9FF','#7AACE8'],   /* 宋 → 蓝 */
-  '胡': ['#FFE0B0','#F0B860'],   /* 胡 → 橘黄 */
-  '叶': ['#BCEBBC','#7CCB7C'],   /* 叶 → 绿 */
-  '王': ['#FFD9D9','#F0A0A0'],   /* 王 → 淡红 */
-  '姜': ['#FFE9A3','#E0B838'],   /* 姜 → 姜黄 */
-  '刘': ['#FFD9B0','#E89858'],   /* 刘 → 橙 */
-  '司': ['#CDBCFC','#A08AEC'],   /* 司 → 紫 */
-  '蔷': ['#FBC1D5','#E87CA8'],   /* 蔷 → 玫红 */
-  '华': ['#FFC9C9','#F09090'],   /* 华 → 浅红 */
-  '櫂': ['#B3D9FF','#74A8E8'],   /* 櫂 → 蓝 */
-  '丙': ['#FFD9B0','#E89858'],   /* 丙 → 橙 */
-  '翔': ['#B3D9FF','#74A8E8'],   /* 翔 → 蓝 */
-  '曜': ['#FFEC9E','#E8C038'],   /* 曜 → 黄 */
-  '百': ['#B8EBB8','#7CCB7C'],   /* 百 → 绿 */
-  '来': ['#FFD9B0','#E89858'],   /* 来 → 橙 */
-  '旺': ['#FFCEA3','#F09A50'],   /* 旺 → 橙 */
-  '管': ['#B3D9FF','#74A8E8'],   /* 管 → 蓝 */
-  '姬': ['#FBC1D5','#E87CA8'],   /* 姬 → 粉 */
-  '皇': ['#FFEC9E','#E8B838'],   /* 皇 → 金 */
-  '韩': ['#CDBCFC','#A08AEC'],   /* 韩 → 紫 */
-  '仲': ['#B8EBB8','#7CCB7C'],   /* 仲 → 绿 */
-  '隼': ['#FFCEA3','#F09A50'],   /* 隼 → 橙 */
+  '红': ['#FFB3B3','#FF7B7B'],'紫': ['#D0BFFF','#A98BF5'],'茈': ['#C4A6F0','#9B6FE0'],
+  '蓝': ['#B3D9FF','#74B3F5'],'茶': ['#D4BFA6','#A88567'],'碧': ['#A8E6D8','#5FC6A6'],
+  '黄': ['#FFE9A3','#F0C238'],'白': ['#E8EBEF','#B8C0CC'],'黑': ['#B0B5BD','#6E747E'],
+  '朱': ['#FF9EA6','#E85762'],'李': ['#B5E6B5','#78C978'],'铃': ['#FFEC9E','#F5C948'],
+  '香': ['#FBC1D5','#E88AAC'],'玉': ['#B5E8D5','#6FC9A8'],'柴': ['#D4BFA6','#A88567'],
+  '榛': ['#D4BFA6','#A88567'],'浪': ['#B3D9FF','#74B3F5'],'孙': ['#FFCEA3','#F09A50'],
+  '杜': ['#FFD0A3','#EE9850'],'杨': ['#B5E8D5','#6FC9A8'],'欧阳': ['#DAC4FF','#AE8DE8'],
+  '郑': ['#B8EBB8','#7CCB7C'],'凌': ['#C4E4FF','#8ABDF0'],'羽': ['#DDE9FF','#A3B8E8'],
+  '缥': ['#C0EBEC','#82C9CB'],'葵': ['#CDBCFC','#A08AEC'],'陆': ['#DEF0A8','#B5CC63'],
+  '景': ['#A8E6E6','#62C4C4'],'霄': ['#B3D9FF','#74A8E8'],'宋': ['#B3D9FF','#7AACE8'],
+  '胡': ['#FFE0B0','#F0B860'],'叶': ['#BCEBBC','#7CCB7C'],'王': ['#FFD9D9','#F0A0A0'],
+  '姜': ['#FFE9A3','#E0B838'],'刘': ['#FFD9B0','#E89858'],'司': ['#CDBCFC','#A08AEC'],
+  '蔷': ['#FBC1D5','#E87CA8'],'华': ['#FFC9C9','#F09090'],'櫂': ['#B3D9FF','#74A8E8'],
+  '丙': ['#FFD9B0','#E89858'],'翔': ['#B3D9FF','#74A8E8'],'曜': ['#FFEC9E','#E8C038'],
+  '百': ['#B8EBB8','#7CCB7C'],'来': ['#FFD9B0','#E89858'],'旺': ['#FFCEA3','#F09A50'],
+  '管': ['#B3D9FF','#74A8E8'],'姬': ['#FBC1D5','#E87CA8'],'皇': ['#FFEC9E','#E8B838'],
+  '韩': ['#CDBCFC','#A08AEC'],'仲': ['#B8EBB8','#7CCB7C'],'隼': ['#FFCEA3','#F09A50'],
 };
 
-/* 根据名字返回果冻色（优先匹配双字姓氏，再匹配单字） */
 function nameToColor(name){
   for (let len = 2; len >= 1; len--){
     const key = name.slice(0, len);
     if (COLOR_MAP[key]) return COLOR_MAP[key];
   }
-  /* 兜底：明亮哈希色 */
   let hash = 0;
   for (let i = 0; i < name.length; i++){
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -478,24 +429,37 @@ function goTo(id){
   $(id).classList.add('active');
 }
 
+function pairKey(a, b){
+  return a < b ? a + '||' + b : b + '||' + a;
+}
+
 /* =========================================================
-   3. 暗设定参数（用户看不到）
+   3. 暗设定参数
    ========================================================= */
-let failLimit = 2;                 // 淘汰阈值（动态可改）
-const PHASE2_THRESHOLD = 40;       // 剩 40 人 → 阶段 2 + 重置
-const PHASE3_THRESHOLD = 20;       // 剩 20 人 → 阶段 3 + 重置 + 改成 3 次淘汰
-const FINAL_COUNT = 9;             // 最终保留 9 位
+let failLimit = 2;
+const PHASE2_THRESHOLD = 40;
+const PHASE3_THRESHOLD = 20;
+const PHASE4_THRESHOLD = 10;
+const FINAL_COUNT = 9;
+
+function getInterval(alive){
+  if (alive > 30 && alive <= 40) return 'I1';
+  if (alive > 20 && alive <= 25) return 'I2';
+  return null;
+}
 
 /* =========================================================
    4. 游戏状态
    ========================================================= */
 let fighters = [];
 let cards = [];
-let phase = 1;
+let stage = 1;
 let picking = false;
 let selectedIndices = [];
-let phase2Done = false;
-let phase3Done = false;
+let appeared = new Set();
+let currentInterval = null;
+let intervalAppeared = new Set();
+let pairHistory = new Set();
 
 /* =========================================================
    5. 初始化
@@ -508,11 +472,13 @@ function initGame(){
     wins: 0,
     alive: true,
   }));
-  phase = 1;
+  stage = 1;
   picking = false;
   selectedIndices = [];
-  phase2Done = false;
-  phase3Done = false;
+  appeared = new Set();
+  currentInterval = null;
+  intervalAppeared = new Set();
+  pairHistory = new Set();
   failLimit = 2;
   nextRound();
 }
@@ -525,13 +491,63 @@ function pickN(n){
   const alive = fighters.filter(f => f.alive);
   if (alive.length <= n) return alive;
 
+  if (stage === 1){
+    const notAppeared = alive.filter(f => !appeared.has(f.name));
+    if (notAppeared.length >= n){
+      return shuffle(notAppeared).slice(0, n);
+    }
+    const picked = [...notAppeared];
+    const rest = alive.filter(f => appeared.has(f.name));
+    const extra = shuffle(rest).slice(0, n - picked.length);
+    return picked.concat(extra);
+  }
+
+  if (currentInterval && n === 2){
+    return pickTwoSmart(alive);
+  }
+
   const sorted = [...alive].sort((a, b) =>
     (b.fails - a.fails) || (Math.random() - 0.5)
   );
-
   const K = Math.min(sorted.length, n * 3);
-  const pool = shuffle(sorted.slice(0, K));
-  return pool.slice(0, n);
+  return shuffle(sorted.slice(0, K)).slice(0, n);
+}
+
+function isPairUsed(a, b){
+  return pairHistory.has(pairKey(a, b));
+}
+
+function collectPairs(groupA, groupB, sameGroup){
+  const out = [];
+  for (let i = 0; i < groupA.length; i++){
+    const start = sameGroup ? i + 1 : 0;
+    for (let j = start; j < groupB.length; j++){
+      const a = groupA[i], b = groupB[j];
+      if (a.name === b.name) continue;
+      if (isPairUsed(a.name, b.name)) continue;
+      out.push([a, b]);
+    }
+  }
+  return out;
+}
+
+function pickTwoSmart(alive){
+  const notAppeared = alive.filter(f => !intervalAppeared.has(f.name));
+  const appearedList = alive.filter(f => intervalAppeared.has(f.name));
+
+  if (notAppeared.length >= 2){
+    const c = collectPairs(notAppeared, notAppeared, true);
+    if (c.length) return c[Math.floor(Math.random() * c.length)];
+  }
+  if (notAppeared.length >= 1 && appearedList.length >= 1){
+    const c = collectPairs(notAppeared, appearedList, false);
+    if (c.length) return c[Math.floor(Math.random() * c.length)];
+  }
+  if (appearedList.length >= 2){
+    const c = collectPairs(appearedList, appearedList, true);
+    if (c.length) return c[Math.floor(Math.random() * c.length)];
+  }
+  return shuffle(alive).slice(0, 2);
 }
 
 function resetFails(){
@@ -549,26 +565,43 @@ function nextRound(){
     return;
   }
 
-  /* 40 人 → 阶段 2 + 重置 */
-  if (!phase2Done && alive <= PHASE2_THRESHOLD){
-    phase = 2;
-    resetFails();
-    phase2Done = true;
-  }
-  /* 20 人 → 阶段 3 + 重置 + 改成 3 次淘汰 */
-  if (!phase3Done && alive <= PHASE3_THRESHOLD){
-    phase = 3;
-    resetFails();
-    failLimit = 3;    /* 暗改：从此变成 3 次没选中才淘汰 */
-    phase3Done = true;
+  const newInterval = getInterval(alive);
+  if (newInterval !== currentInterval){
+    currentInterval = newInterval;
+    intervalAppeared = new Set();
+    pairHistory = new Set();
   }
 
-  const n = phase === 1 ? 4 : 2;
+  if (stage === 1){
+    const notAppearedAlive = fighters.filter(f => f.alive && !appeared.has(f.name)).length;
+    if (notAppearedAlive === 0){
+      stage = 2;
+      resetFails();
+    }
+  } else if (stage === 2 && alive <= PHASE2_THRESHOLD){
+    stage = 3;
+    resetFails();
+  } else if (stage === 3 && alive <= PHASE3_THRESHOLD){
+    stage = 4;
+    resetFails();
+    failLimit = 3;
+  } else if (stage === 4 && alive <= PHASE4_THRESHOLD){
+    stage = 5;
+    resetFails();
+  }
+
+  const n = stage === 1 ? 4 : 2;
   cards = pickN(n);
 
   if (!cards || cards.length < 2){
     endGame();
     return;
+  }
+
+  if (currentInterval && cards.length === 2){
+    intervalAppeared.add(cards[0].name);
+    intervalAppeared.add(cards[1].name);
+    pairHistory.add(pairKey(cards[0].name, cards[1].name));
   }
 
   renderPK();
@@ -628,7 +661,7 @@ function updateProgress(){
 function onCardClick(index){
   if (picking) return;
 
-  if (phase === 1){
+  if (stage === 1){
     const el = document.querySelector(`.pk-card[data-index="${index}"]`);
     if (!el) return;
 
@@ -668,6 +701,8 @@ function processPhase1(){
 
   const pickedList = selectedIndices.map(i => cards[i]);
   const unpickedList = cards.filter((_, i) => !selectedIndices.includes(i));
+
+  cards.forEach(f => appeared.add(f.name));
 
   pickedList.forEach(f => f.wins++);
   unpickedList.forEach(f => {
@@ -770,7 +805,8 @@ function aggregateRanking(){
   const map = {};
 
   h.forEach(session => {
-    session.winners.forEach((name, idx) => {
+    const winners = session.winners || [];
+    winners.forEach((name, idx) => {
       if (!map[name]) map[name] = { name, count: 0, score: 0 };
       map[name].count++;
       map[name].score += (FINAL_COUNT - idx);
@@ -801,7 +837,7 @@ function renderRanking(){
 }
 
 /* =========================================================
-   10. 导出图片
+   10. 导出图片（带标题）
    ========================================================= */
 function roundRect(ctx, x, y, w, h, r){
   ctx.beginPath();
@@ -817,28 +853,55 @@ function exportImage(){
   const n = finalWinners.length;
   const cols = 3;
   const rows = Math.ceil(n / cols);
-  const SIZE = 1080, PAD = 40, GAP = 14;
+  const SIZE = 1080;
+  const PAD = 40;
+  const GAP = 14;
+  const TITLE_H = 220;
   const cell = (SIZE - PAD * 2 - GAP * (cols - 1)) / cols;
-  const height = PAD * 2 + rows * cell + (rows - 1) * GAP;
+  const gridH = rows * cell + (rows - 1) * GAP;
+  const totalH = TITLE_H + gridH + PAD;
   const FONT = '-apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
 
   const canvas = $('exportCanvas');
   canvas.width = SIZE;
-  canvas.height = height;
+  canvas.height = totalH;
   const ctx = canvas.getContext('2d');
 
-  /* 白底 */
   ctx.fillStyle = '#FFFFFF';
-  ctx.fillRect(0, 0, SIZE, height);
+  ctx.fillRect(0, 0, SIZE, totalH);
 
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
+
+  /* 主标题 */
+  ctx.fillStyle = '#1A1A1F';
+  ctx.font = `800 76px ${FONT}`;
+  ctx.fillText('彩云国物语', SIZE / 2, 78);
+
+  /* 副标题（浆果色渐变） */
+  const subGrad = ctx.createLinearGradient(SIZE/2 - 200, 0, SIZE/2 + 200, 0);
+  subGrad.addColorStop(0, '#FF7BC0');
+  subGrad.addColorStop(0.5, '#E94B9C');
+  subGrad.addColorStop(1, '#A23B72');
+  ctx.fillStyle = subGrad;
+  ctx.font = `700 38px ${FONT}`;
+  ctx.fillText('最喜欢角色 · 九选', SIZE / 2, 148);
+
+  /* 装饰线 */
+  const lineGrad = ctx.createLinearGradient(SIZE/2 - 60, 0, SIZE/2 + 60, 0);
+  lineGrad.addColorStop(0, 'rgba(233,75,156,0)');
+  lineGrad.addColorStop(0.5, 'rgba(233,75,156,.8)');
+  lineGrad.addColorStop(1, 'rgba(233,75,156,0)');
+  ctx.fillStyle = lineGrad;
+  ctx.fillRect(SIZE/2 - 60, 186, 120, 2);
+
+  const gridStartY = TITLE_H;
 
   finalWinners.forEach((item, i) => {
     const col = i % cols;
     const row = Math.floor(i / cols);
     const x = PAD + col * (cell + GAP);
-    const y = PAD + row * (cell + GAP);
+    const y = gridStartY + row * (cell + GAP);
 
     const [c1, c2] = item.color;
     const grad = ctx.createLinearGradient(x, y, x + cell, y + cell);
@@ -848,7 +911,6 @@ function exportImage(){
     roundRect(ctx, x, y, cell, cell, 36);
     ctx.fill();
 
-    /* 顶部高光，营造果冻感 */
     const hl = ctx.createRadialGradient(
       x + cell / 2, y, 0,
       x + cell / 2, y, cell * .9
@@ -882,7 +944,7 @@ function exportImage(){
   const done = url => {
     const a = document.createElement('a');
     a.href = url;
-    a.download = '我的彩云国最爱角色.png';
+    a.download = '彩云国物语-最喜欢角色九选.png';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
