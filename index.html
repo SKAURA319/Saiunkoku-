@@ -139,7 +139,7 @@ h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em;color:v
 
 .pk-arena{
   flex:1;min-height:0;
-  padding:16px 16px calc(24px + env(safe-area-inset-bottom));
+  padding:16px 16px 8px;
   width:100%;max-width:700px;margin:0 auto;
 }
 .pk-arena.dual{display:flex;align-items:stretch;gap:12px}
@@ -200,6 +200,27 @@ h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em;color:v
   position:relative;z-index:1;
 }
 .pk-arena.quad .pk-deco{width:22px;height:2px}
+
+/* ---------- 底部刷新栏 ---------- */
+.pk-footer{
+  padding:10px 16px calc(16px + env(safe-area-inset-bottom));
+  width:100%;max-width:700px;margin:0 auto;
+  flex-shrink:0;
+}
+.btn-refresh{
+  width:100%;padding:13px;border:1px solid var(--line);
+  border-radius:14px;background:#FFFFFF;
+  color:var(--text);font-size:14px;font-weight:700;
+  cursor:pointer;font-family:inherit;
+  transition:background .15s,transform .15s,border-color .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-refresh:active{transform:scale(.98);background:var(--bg-soft);border-color:rgba(233,75,156,.25)}
+.btn-refresh .icon{
+  font-size:16px;line-height:1;
+  transition:transform .35s cubic-bezier(.2,.8,.2,1);
+}
+.btn-refresh:active .icon{transform:rotate(180deg)}
 
 /* ---------- 结果页 ---------- */
 .result-wrap{
@@ -329,6 +350,11 @@ h1{font-size:36px;line-height:1.2;font-weight:800;letter-spacing:-.025em;color:v
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
   </div>
   <div class="pk-arena dual" id="pkArena"></div>
+  <div class="pk-footer">
+    <button class="btn-refresh" id="btnRefresh">
+      <span class="icon">↻</span> 换一批
+    </button>
+  </div>
 </section>
 
 <!-- ============ 结果页 ============ -->
@@ -376,77 +402,66 @@ const NAMES = [
 
 /* =========================================================
    颜色映射
-   ---------------------------------------------------------
-   规则：
-   1. 先检查 '#完整名字' → 用于单独定制的角色
-   2. 再按 2 字 / 1 字关键字匹配（匹配的是名字开头）
    ========================================================= */
 const COLOR_MAP = {
-  /* ----- 姓氏 / 关键字（按名字开头匹配） ----- */
-  '红': ['#F5A0A0','#D05060'],        /* 淡正红（红秀丽、红邵可、红黎深、红玖琅、红玉环） */
-  '紫': ['#D0BFFF','#A98BF5'],        /* 紫（紫刘辉、紫戬华） */
-  '茈': ['#C4A6F0','#9B6FE0'],        /* 深紫（茈静兰） */
-  '蓝': ['#B3D9FF','#74B3F5'],        /* 蓝（蓝楸瑛、蓝龙莲、蓝十三、蓝雪那） */
-  '茶': ['#C8A878','#8A6840'],        /* 深棕（茶鸳洵、茶春姫、茶朔洵、茶克洵） */
-  '碧': ['#A8E6D8','#5FC6A6'],        /* 翠（碧珀明、碧歌梨、碧万里） */
-  '黄': ['#FFE9A3','#F0C238'],        /* 黄（黄奇人） */
-  '白': ['#E8EBEF','#B8C0CC'],        /* 灰白（白雷炎） */
-  '黑': ['#B0B5BD','#6E747E'],        /* 深灰（黑燿世） */
-  '朱': ['#FF9EA6','#E85762'],        /* 朱红（朱鸾） */
-  '李': ['#E88888','#C03848'],        /* 绛色（李绛攸，比红家略深） */
-  '铃': ['#EDF5E8','#B8D4A8'],        /* 铃兰花色（铃兰） */
-  '香': ['#D8B888','#9A7048'],        /* 浅茶色（香铃） */
-  '玉': ['#B5E8D5','#6FC9A8'],        /* 玉绿（玉华） */
-  '柴': ['#E0B888','#A86838'],        /* 焦糖棕（柴进、柴凜、柴彰） */
-  '榛': ['#E8A0B0','#C04060'],        /* 红梅袭色（榛苏芳） */
-  '浪': ['#E8D4B8','#B89060'],        /* 淡茶色（浪燕青） */
-  '孙': ['#9098A0','#4A5058'],        /* 深灰（孙陵王） */
-  '杜': ['#A0A4AB','#5A5F66'],        /* 淡黑（杜影月） */
-  '杨': ['#B5E8D5','#6FC9A8'],        /* 青绿（杨修） */
-  '欧阳': ['#9CC8D8','#2E7890'],      /* 青碧（欧阳玉、欧阳纯） */
-  '郑': ['#F8BBD9','#EC407A'],        /* 玫红（郑悠舜） */
-  '凌': ['#A8C8E8','#4A7AAB'],        /* 苍色（凌晏树） */
-  '羽': ['#B8D8E8','#6AA8C8'],        /* 缥色（羽羽） */
-  '缥': ['#C0EBEC','#82C9CB'],        /* 淡青（缥璃樱大、缥璃樱小、缥珠翠、缥英姬、缥瑠花） */
-  '葵': ['#CDBCFC','#A08AEC'],        /* 紫（葵皇毅） */
-  '陆': ['#E0D0FF','#B8A0E8'],        /* 淡紫（陆清雅） */
-  '景': ['#F0E8B0','#D4C060'],        /* 柚梨色（景柚梨） */
-  '霄': ['#D0BFFF','#A98BF5'],        /* 紫色（霄瑶璇） */
-  '宋': ['#F0C8DC','#D080A8'],        /* 沈丁花色（宋隼凱） */
-  '胡': ['#E0C8F0','#A868C8'],        /* 梦幻紫（胡蝶） */
-  '叶': ['#E8D8A0','#B8A038'],        /* 土黄（叶棕庚） */
-  '王': ['#FFD9D9','#F0A0A0'],        /* 淡红（王庆张） */
-  '姜': ['#FFE9A3','#E0B838'],        /* 姜黄（姜文仲） */
-  '刘': ['#D89090','#A03038'],        /* 酒红（刘志美） */
-  '司': ['#8AB4E8','#2850A0'],        /* 宝蓝（司马迅） */
-  '蔷': ['#FBC1D5','#E87CA8'],        /* 玫红（蔷薇姬） */
-  '华': ['#C8CCD4','#90969E'],        /* 淡黑（华真） */
-  '櫂': ['#B3D9FF','#74A8E8'],        /* 蓝（櫂瑜） */
-  '旺': ['#A8C8E8','#4A7AAB'],        /* 苍色（旺季、旺飞燕） */
-  '翔': ['#E8D4B8','#B89060'],        /* 茶色（翔琳，与浪燕青同色） */
-  '曜': ['#E8D4B8','#B89060'],        /* 茶色（曜春，与浪燕青同色） */
-  '来': ['#8A9098','#4A5058'],        /* 中灰（来俊臣） */
-  '管': ['#DCDCDC','#3C3C3C'],        /* 黑白色（管飞翔） */
-  '鬼': ['#C4B5E8','#8B6BC4'],        /* 暗紫（鬼姬） */
-  '立': ['#C8E8F0','#8AC0D4'],        /* 缥色（立花） */
-  '阳': ['#F1F3F5','#C1C9D2'],        /* 白灰（阳月） */
+  '红': ['#F5A0A0','#D05060'],
+  '紫': ['#D0BFFF','#A98BF5'],
+  '茈': ['#C4A6F0','#9B6FE0'],
+  '蓝': ['#B3D9FF','#74B3F5'],
+  '茶': ['#C8A878','#8A6840'],
+  '碧': ['#A8E6D8','#5FC6A6'],
+  '黄': ['#FFE9A3','#F0C238'],
+  '白': ['#E8EBEF','#B8C0CC'],
+  '黑': ['#B0B5BD','#6E747E'],
+  '朱': ['#FF9EA6','#E85762'],
+  '李': ['#E88888','#C03848'],
+  '铃': ['#EDF5E8','#B8D4A8'],
+  '香': ['#D8B888','#9A7048'],
+  '玉': ['#B5E8D5','#6FC9A8'],
+  '柴': ['#E0B888','#A86838'],
+  '榛': ['#E8A0B0','#C04060'],
+  '浪': ['#E8D4B8','#B89060'],
+  '孙': ['#9098A0','#4A5058'],
+  '杜': ['#A0A4AB','#5A5F66'],
+  '杨': ['#B5E8D5','#6FC9A8'],
+  '欧阳': ['#9CC8D8','#2E7890'],
+  '郑': ['#F8BBD9','#EC407A'],
+  '凌': ['#A8C8E8','#4A7AAB'],
+  '羽': ['#B8D8E8','#6AA8C8'],
+  '缥': ['#C0EBEC','#82C9CB'],
+  '葵': ['#CDBCFC','#A08AEC'],
+  '陆': ['#E0D0FF','#B8A0E8'],
+  '景': ['#F0E8B0','#D4C060'],
+  '霄': ['#D0BFFF','#A98BF5'],
+  '宋': ['#F0C8DC','#D080A8'],
+  '胡': ['#E0C8F0','#A868C8'],
+  '叶': ['#E8D8A0','#B8A038'],
+  '王': ['#FFD9D9','#F0A0A0'],
+  '姜': ['#FFE9A3','#E0B838'],
+  '刘': ['#D89090','#A03038'],
+  '司': ['#8AB4E8','#2850A0'],
+  '蔷': ['#FBC1D5','#E87CA8'],
+  '华': ['#C8CCD4','#90969E'],
+  '櫂': ['#B3D9FF','#74A8E8'],
+  '旺': ['#A8C8E8','#4A7AAB'],
+  '翔': ['#E8D4B8','#B89060'],
+  '曜': ['#E8D4B8','#B89060'],
+  '来': ['#8A9098','#4A5058'],
+  '管': ['#DCDCDC','#3C3C3C'],
+  '鬼': ['#C4B5E8','#8B6BC4'],
+  '立': ['#C8E8F0','#8AC0D4'],
+  '阳': ['#F1F3F5','#C1C9D2'],
 
-  /* ----- 完整名字定制（优先级最高） ----- */
-  '#百合姬': ['#D89AC8','#A04888'],   /* 紫红（百合姬） */
-  '#皋韩升': ['#9CC8E0','#3A7AA8'],   /* 青蓝（皋韩升） */
+  '#百合姬': ['#D89AC8','#A04888'],
+  '#皋韩升': ['#9CC8E0','#3A7AA8'],
 };
 
 function nameToColor(name){
-  /* 1. 完整名字定制（优先级最高） */
   if (COLOR_MAP['#' + name]) return COLOR_MAP['#' + name];
-
-  /* 2. 关键字匹配（先 2 字再 1 字，只匹配名字开头） */
   for (let len = 2; len >= 1; len--){
     const key = name.slice(0, len);
     if (COLOR_MAP[key]) return COLOR_MAP[key];
   }
-
-  /* 3. 兜底：按名字哈希生成明亮色 */
   let hash = 0;
   for (let i = 0; i < name.length; i++){
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -482,18 +497,7 @@ function pairKey(a, b){
 }
 
 /* =========================================================
-   3. 暗设定参数（用户看不到）
-   ---------------------------------------------------------
-   流程：
-   1. 四选二：全员出现一次 → 继续四选二淘汰到 ≤40 人
-   2. 二选一（40-31 区间）：全员出现一次 + 配对不重复
-   3. 二选一（25-21 区间）：全员出现一次 + 配对不重复
-   4. 二选一（20-11 区间）：全员出现一次 + 配对不重复
-      （进入 20 人时同时重置胜场和失败次数）
-   5. 10 人：只重置失败次数（胜场保留）
-   70 到 21 人：2 次没选中淘汰
-   20 到 9 人：3 次没选中淘汰
-   最终排序：只看 20 人以下阶段的胜场与失败次数
+   3. 暗设定参数
    ========================================================= */
 let failLimit = 2;
 const PHASE2_THRESHOLD = 40;
@@ -502,9 +506,9 @@ const PHASE4_THRESHOLD = 10;
 const FINAL_COUNT = 9;
 
 function getInterval(alive){
-  if (alive > 30 && alive <= 40) return 'I1';   /* 40-31 */
-  if (alive > 20 && alive <= 25) return 'I2';   /* 25-21 */
-  if (alive > 10 && alive <= 20) return 'I3';   /* 20-11 */
+  if (alive > 30 && alive <= 40) return 'I1';
+  if (alive > 20 && alive <= 25) return 'I2';
+  if (alive > 10 && alive <= 20) return 'I3';
   return null;
 }
 
@@ -801,7 +805,42 @@ function processPhase2or3(winnerIndex){
 }
 
 /* =========================================================
-   8. 结束 & 结果
+   8. 刷新键（换一批新牌）
+   ========================================================= */
+function refreshCards(){
+  /* 正在动画/过渡中，忽略点击 */
+  if (picking) return;
+
+  /* 把当前牌标记为"已看过"，避免刷新后抽到同一组 */
+  if (currentInterval && cards.length === 2){
+    intervalAppeared.add(cards[0].name);
+    intervalAppeared.add(cards[1].name);
+    pairHistory.add(pairKey(cards[0].name, cards[1].name));
+  }
+
+  const n = stage === 1 ? 4 : 2;
+  const newCards = pickN(n);
+
+  if (!newCards || newCards.length < 2){
+    endGame();
+    return;
+  }
+
+  cards = newCards;
+
+  /* 新牌也标记一下（避免下次刷新抽到刚刷掉的组合） */
+  if (currentInterval && cards.length === 2){
+    intervalAppeared.add(cards[0].name);
+    intervalAppeared.add(cards[1].name);
+    pairHistory.add(pairKey(cards[0].name, cards[1].name));
+  }
+
+  selectedIndices = [];
+  renderPK();
+}
+
+/* =========================================================
+   9. 结束 & 结果
    ========================================================= */
 let finalWinners = [];
 
@@ -840,7 +879,7 @@ function buildGrid(){
 }
 
 /* =========================================================
-   9. 本地记录 & 排行榜
+   10. 本地记录 & 排行榜
    ========================================================= */
 const HISTORY_KEY = 'cyg_vote_history_v1';
 
@@ -898,7 +937,7 @@ function renderRanking(){
 }
 
 /* =========================================================
-   10. 导出图片（带标题）
+   11. 导出图片
    ========================================================= */
 function roundRect(ctx, x, y, w, h, r){
   ctx.beginPath();
@@ -1020,12 +1059,14 @@ function exportImage(){
 }
 
 /* =========================================================
-   11. 事件绑定
+   12. 事件绑定
    ========================================================= */
 $('btnStart').addEventListener('click', () => {
   initGame();
   goTo('screen-pk');
 });
+
+$('btnRefresh').addEventListener('click', refreshCards);
 
 $('btnSave').addEventListener('click', exportImage);
 
